@@ -1,0 +1,3 @@
+# No third-party dependencies -- this project uses only the Python
+# standard library (json, csv, random, argparse, dataclasses, typing).
+# Tested with Python 3.9+.
