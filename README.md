@@ -18,6 +18,122 @@ Built for the Nexgensis Technologies Python Developer assignment.
 | Code clarity & comments | 10% | Every module opens with a docstring explaining *why*, not just what; assumptions are called out inline where the decision is made |
 | Bonus creativity | 10% | All 4 requested bonuses + one uninvited extra (workload fairness insight) — see below |
 
+## Architecture & Workflow
+
+### 1. System Architecture — module structure
+
+How the codebase is organized: input flows through the core pipeline,
+bonus modules attach optionally without touching core logic, and two
+separate test layers verify everything independently.
+
+```mermaid
+flowchart TB
+    subgraph Input["📥 Input Layer"]
+        A[base_case.json / test_case_N.json]
+    end
+    subgraph Core["⚙️ Core Pipeline"]
+        B[loader.py<br/>normalizes both JSON schemas]
+        C[models.py<br/>Warehouse, Agent, Package]
+        D[simulator.py<br/>assignment + delivery simulation]
+        E[report.py<br/>builds report.json]
+    end
+    subgraph Bonus["✨ Bonus Modules"]
+        F[bonus_delays.py]
+        G[bonus_ascii.py]
+        H[bonus_csv.py]
+        I[bonus_new_agent.py]
+        J[bonus_insights.py]
+    end
+    subgraph Output["📤 Output Layer"]
+        K[report.json]
+        L[output/ folder<br/>bonus files]
+    end
+    subgraph Tests["✅ Verification"]
+        M[test_unit.py<br/>17 unit tests]
+        N[run_all_test_cases.py<br/>11-file integration check]
+    end
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> K
+    D -.optional flags.-> F
+    D -.-> G
+    D -.-> H
+    D -.-> I
+    D -.-> J
+    F & G & H & I & J --> L
+    D -.tested by.-> M
+    E -.tested by.-> N
+    style Input fill:#1e3a5f,stroke:#4fa8ff,color:#fff
+    style Core fill:#1e4620,stroke:#4caf50,color:#fff
+    style Bonus fill:#4a2f5c,stroke:#b47ee6,color:#fff
+    style Output fill:#5c3d1e,stroke:#ff9800,color:#fff
+    style Tests fill:#5c1e2e,stroke:#f44336,color:#fff
+```
+
+### 2. Algorithm Flow — how one package gets processed
+
+The core decision logic per package: nearest-agent assignment (with a
+documented tie-break rule), cumulative position simulation, and how
+zero-delivery agents are handled safely in the final report.
+
+```mermaid
+flowchart TD
+    Start([Start: packages list, in input order]) --> Loop{More packages<br/>to process?}
+    Loop -->|No| Done([All packages delivered<br/>→ build report])
+    Loop -->|Yes| Pkg[Take next package P]
+    Pkg --> Wh[Find P's warehouse location]
+    Wh --> Nearest[Compute distance from EVERY agent's<br/>fixed starting location to that warehouse]
+    Nearest --> Tie{Two or more agents<br/>exactly tied?}
+    Tie -->|Yes| Break[Pick lowest agent ID]
+    Tie -->|No| Pick[Pick the closest agent]
+    Break --> Assign
+    Pick --> Assign[Assign package to chosen agent]
+    Assign --> Move["Agent travels:<br/>current position → warehouse → destination"]
+    Move --> Update[Update agent's current position<br/>+ accumulate total_distance]
+    Update --> Loop
+    Done --> Zero{Did this agent<br/>deliver 0 packages?}
+    Zero -->|Yes| Null[efficiency = null<br/>excluded from best_agent]
+    Zero -->|No| Eff["efficiency = total_distance ÷ packages_delivered"]
+    Null --> Best[best_agent = lowest efficiency<br/>among agents who delivered]
+    Eff --> Best
+    style Start fill:#1e3a5f,stroke:#4fa8ff,color:#fff
+    style Done fill:#1e4620,stroke:#4caf50,color:#fff
+    style Tie fill:#5c3d1e,stroke:#ff9800,color:#fff
+    style Zero fill:#5c1e2e,stroke:#f44336,color:#fff
+    style Best fill:#1e4620,stroke:#4caf50,color:#fff
+```
+
+### 3. CLI Decision Flow — what happens when you run main.py
+
+Traces one CLI invocation end to end: validation, core report generation,
+then two independent, sequential checks (--bonus, then --new-agents-demo)
+— either, both, or neither can run, exactly matching main.py's two
+separate `if` blocks.
+
+```mermaid
+flowchart LR
+    A([python main.py input.json]) --> B[Load + validate JSON]
+    B -->|invalid| C[Clean error message<br/>exit 1, no traceback]
+    B -->|valid| D[Run core simulation]
+    D --> E[Write report.json]
+    E --> F{--bonus flag?}
+    F -->|Yes| G[Run delays, ASCII map,<br/>CSV export, workload insight]
+    G --> H[Write to output/]
+    F -->|No| I
+    H --> I{--new-agents-demo<br/>flag?}
+    I -->|Yes| J[Simulate mid-day agent join]
+    J --> K[Write output/report_new_agent_demo.json]
+    I -->|No| Z([Done])
+    K --> Z
+    style A fill:#1e3a5f,stroke:#4fa8ff,color:#fff
+    style C fill:#5c1e2e,stroke:#f44336,color:#fff
+    style F fill:#5c3d1e,stroke:#ff9800,color:#fff
+    style I fill:#5c3d1e,stroke:#ff9800,color:#fff
+    style Z fill:#1e4620,stroke:#4caf50,color:#fff
+```
+
 ## Quick start
 
 ```bash
