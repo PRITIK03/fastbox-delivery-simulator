@@ -201,5 +201,6 @@ Two layers:
 
 Input validation (`loader.py`) also fails fast and clearly (non-zero exit,
 readable error message) on missing files, malformed JSON, missing required
-keys, duplicate warehouse/agent/package IDs, and packages referencing a
+keys (including a package missing `destination`), non-numeric coordinates,
+duplicate warehouse/agent/package IDs, and packages referencing a
 nonexistent warehouse — rather than crashing with a raw traceback.

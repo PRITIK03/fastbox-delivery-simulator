@@ -59,7 +59,12 @@ def _as_point(value) -> tuple:
     if not (isinstance(value, (list, tuple)) and len(value) == 2):
         raise InputFormatError(f"Expected a [x, y] coordinate pair, got: {value!r}")
     x, y = value
-    return (float(x), float(y))
+    try:
+        return (float(x), float(y))
+    except (TypeError, ValueError) as e:
+        raise InputFormatError(
+            f"Expected numeric [x, y] coordinates, got: {value!r}"
+        ) from e
 
 
 def _parse_warehouses(data) -> Dict[str, Warehouse]:
@@ -115,6 +120,8 @@ def _parse_packages(data) -> List[Package]:
             raise InputFormatError(
                 f"Package '{pid}' has neither 'warehouse' nor 'warehouse_id'"
             )
+        if "destination" not in entry:
+            raise InputFormatError(f"Package '{pid}' is missing required key: 'destination'")
         packages.append(
             Package(
                 id=pid,

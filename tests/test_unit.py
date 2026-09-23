@@ -92,6 +92,24 @@ class TestLoaderBothSchemas(unittest.TestCase):
         with self.assertRaises(InputFormatError):
             load_scenario(self._write(bad))
 
+    def test_non_numeric_coordinate_raises(self):
+        bad = {
+            "warehouses": {"W1": ["a", "b"]},
+            "agents": {"A1": [1, 1]},
+            "packages": [{"id": "P1", "warehouse": "W1", "destination": [2, 2]}],
+        }
+        with self.assertRaises(InputFormatError):
+            load_scenario(self._write(bad))
+
+    def test_missing_destination_key_raises(self):
+        bad = {
+            "warehouses": {"W1": [0, 0]},
+            "agents": {"A1": [1, 1]},
+            "packages": [{"id": "P1", "warehouse": "W1"}],
+        }
+        with self.assertRaises(InputFormatError):
+            load_scenario(self._write(bad))
+
 
 class TestAssignmentAndSimulation(unittest.TestCase):
     def setUp(self):

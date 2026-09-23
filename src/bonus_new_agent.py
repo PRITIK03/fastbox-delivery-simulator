@@ -72,4 +72,10 @@ def run_simulation_with_new_agents(
                 {"event": "agent_joined", "agent_id": new_agent.id, "after_package": package.id}
             )
 
+    if pending_joins:
+        missing = ", ".join(sorted(pending_joins))
+        raise ValueError(
+            f"new_agents joins_after_package references unknown package id(s): {missing}"
+        )
+
     return results, assignment_log

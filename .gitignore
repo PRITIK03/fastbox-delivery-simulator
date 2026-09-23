@@ -39,3 +39,6 @@ Thumbs.db
 
 # Runtime-generated bonus / test outputs (keep root report.json tracked)
 output/
+
+# Local scratch / review fixtures (not part of the assignment)
+tmp_edge_cases/

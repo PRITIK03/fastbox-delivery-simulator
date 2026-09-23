@@ -66,7 +66,7 @@ def main():
 
     try:
         warehouses, agents, packages = load_scenario(args.input_file)
-    except (InputFormatError, FileNotFoundError, json.JSONDecodeError) as e:
+    except (InputFormatError, OSError, json.JSONDecodeError) as e:
         print(f"ERROR loading '{args.input_file}': {e}", file=sys.stderr)
         sys.exit(1)
 
@@ -139,9 +139,13 @@ def main():
                     {"id": "A_NEW", "location": spawn_location, "joins_after_package": trigger_package.id}
                 ]
 
-        demo_results, demo_log = run_simulation_with_new_agents(
-            warehouses, agents, packages, new_agent_events, distance_fn=distance_fn
-        )
+        try:
+            demo_results, demo_log = run_simulation_with_new_agents(
+                warehouses, agents, packages, new_agent_events, distance_fn=distance_fn
+            )
+        except ValueError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            sys.exit(1)
         demo_report = build_report(demo_results)
         os.makedirs("output", exist_ok=True)
         write_report(demo_report, os.path.join("output", "report_new_agent_demo.json"))
