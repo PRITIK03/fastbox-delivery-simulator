@@ -1,0 +1,13 @@
+{
+    "total_agents": 3,
+    "idle_agents": [],
+    "idle_agent_count": 0,
+    "active_agent_count": 3,
+    "packages_per_agent": {
+        "min": 1,
+        "max": 2,
+        "mean": 1.67,
+        "stdev": 0.47
+    },
+    "summary": "Every agent delivered at least one package today."
+}
