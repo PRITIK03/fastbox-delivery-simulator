@@ -175,6 +175,13 @@ document it rather than stop for clarification. Here's every judgment call:
 | CSV export of top performer | `bonus_csv.py` | Exports `best_agent`'s stats to `output/top_performer.csv` |
 | **Workload fairness insight** *(extra, beyond the 4 listed)* | `bonus_insights.py` | See below |
 
+> **Note:** `sample_output/` contains a real, committed run of all bonus
+> features (delay report, ASCII routes, CSV export, workload insight, the
+> mid-day new-agent demo, and all 11 per-file test reports) so they're
+> visible directly on GitHub without needing to run the code. `output/`
+> itself is git-ignored and regenerated fresh on every local run —
+> `sample_output/` is a labeled snapshot, not a build artifact.
+
 **Why the workload insight exists:** while testing against all 10 provided
 `test_case_*.json` files, I noticed *every single one* leaves at least one
 agent with zero deliveries — meaning `best_agent` is sometimes "the best of
