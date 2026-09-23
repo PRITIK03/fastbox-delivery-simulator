@@ -185,7 +185,8 @@ fastbox-delivery-system/
 ├── tests/
 │   ├── run_all_test_cases.py    # integration: runs & validates against all 11 input files
 │   └── test_unit.py              # unit tests: distance fns, both schemas, edge cases
-└── output/                       # generated reports, ASCII map, CSV, insight (created at runtime)
+├── output/                       # generated reports, ASCII map, CSV, insight (created at runtime)
+└── sample_output/                # committed snapshot of a real --bonus run, for browsing on GitHub
 ```
 
 ## How it works
